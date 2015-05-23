@@ -1,0 +1,11 @@
+{
+  "name": "node-rpi-rgb-led-matrix",
+  "version": "0.0.1",
+  "description": "control led matrix with nodejs on raspberry pi. Nodejs binding of https://github.com/hzeller/rpi-rgb-led-matrix",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Maxime Journaux",
+  "license": "GPL v2"
+}
