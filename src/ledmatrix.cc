@@ -68,21 +68,22 @@ Handle<Value> LedMatrix::New(const Arguments& args) {
 
 	assert(args.IsConstructCall());
 
-	if(args.Length() == 0 || !args[0]->IsNumber()) {
-    	return ThrowException(Exception::Error(String::New("Arguments error")));
+    int rows = 32;
+    int chained = 1;
+    int parallel = 1;
+
+	if(args.Length() > 0 && args[0]->IsNumber()) {
+    	rows = args[0]->ToInteger()->Value();
     }
 
-    if(args.Length() == 1 || !args[1]->IsNumber()) {
-    	return ThrowException(Exception::Error(String::New("Arguments error")));
+    if(args.Length() > 1 && args[1]->IsNumber()) {
+    	chained = args[1]->ToInteger()->Value();
     }
 
-    if(args.Length() == 2 || !args[2]->IsNumber()) {
-    	return ThrowException(Exception::Error(String::New("Arguments error")));
+    if(args.Length() > 2 && args[2]->IsNumber()) {
+    	parallel = args[2]->ToInteger()->Value();
     }
 
-    int rows = args[0]->ToInteger()->Value();
-    int chained = args[1]->ToInteger()->Value();
-    int parallel = args[2]->ToInteger()->Value();
 
 	LedMatrix* matrix = new LedMatrix(rows, chained, parallel);
 	matrix->Wrap(args.This());
@@ -155,7 +156,5 @@ Handle<Value> LedMatrix::Fill(const Arguments& args) {
 
   	return Undefined();
 }
-
-
 
 Persistent<FunctionTemplate> LedMatrix::constructor_template;
