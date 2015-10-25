@@ -1,0 +1,3 @@
+[submodule "external/matrix"]
+	path = external/matrix
+	url = https://github.com/hzeller/rpi-rgb-led-matrix.git
