@@ -1,5 +1,27 @@
 # node-rpi-rgb-led-matrix
-Pilot your rgb led matrix with Nodejs ! Nodejs binding of rpi-rgb-led-matrix library https://github.com/hzeller/rpi-rgb-led-matrix
+Pilot your rgb led matrix with Nodejs on Raspberry Pi ! Nodejs binding of rpi-rgb-led-matrix library https://github.com/hzeller/rpi-rgb-led-matrix
+
+## Installation
+
+### With git
+
+In command line, run this command:
+```
+$ git clone --recursive https://github.com/zeitungen/node-rpi-rgb-led-matrix.git
+$ cd node-rpi-rgb-led-matrix
+$ npm i
+```
+
+## Get some Fun
+
+I guess you have installed this into the `node_modules` directory of your project:
+```js
+var LedMatrix = require("node-rpi-rgb-led-matrix");
+
+var matrix = new LedMatrix(16);
+matrix.fill(255, 50, 100);
+matrix.setPixel(0, 0, 0, 50, 255);
+```
 
 ## Add specific defines for rpi-rgb-led-matrix
 
@@ -16,7 +38,9 @@ You have to modify the `binding.gyp` file. In the `rpi-rgb-led-matrix` target ad
 				"external/matrix/lib/graphics.cc", "external/matrix/lib/led-matrix.cc",
 				"external/matrix/lib/thread.cc"],
 			"libraries": ["-lrt", "-lm", "-lpthread"],
+			
 			"defines": ["RGB_CLASSIC_PINOUT", "ONLY_SINGLE_CHAIN"],
+			
 			"include_dirs": [ "external/matrix/include" ],
 	        "direct_dependent_settings": {
 	            "include_dirs": [ "external/matrix/include" ]
@@ -36,3 +60,10 @@ You have this defines possibility:
 
 Look at [rpi-rgb-led-matrix Makefile](https://github.com/hzeller/rpi-rgb-led-matrix/blob/master/lib/Makefile)
 for more details of this defines.
+
+**Don't forget to recompile**:
+```
+$ cd /path/to/node-rpi-rgb-led-matrix
+$ node-gyp build
+```
+or run `npm i`.
