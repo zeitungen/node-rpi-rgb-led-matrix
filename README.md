@@ -23,6 +23,21 @@ matrix.fill(255, 50, 100);
 matrix.setPixel(0, 0, 0, 50, 255);
 ```
 
+## LedMatrix API
+
+* **Constructor: LedMatrix(rows, chainedDisplays, parallelDisplays)**
+  default values are `rows=32`, `chainedDisplays=1`, `parallelDisplay=1`
+* **getWidth()** return current led matrix width
+* **getHeight()** return current led matrix height
+* **fill(red, green, blue)** fill the led matrix with color specified
+  by `red`, `green` and `blue`. `red`, `green` and `blue` must be between `0` and `255` 
+* **setPixel(x, y, red, green, blue)** set the color pixel at the position `x`,`y` 
+  with color specified by `red`, `green` and `blue`. `red`, `green` and `blue` must be
+  between `0` and `255`. `x` must be between `0` and `getWidth()`. `y` must be between
+  `0`and `getGeight()`
+* **clear()** reset the led matrix display (shut down all leds)
+
+
 ## Add specific defines for rpi-rgb-led-matrix
 
 You can add specific defines for the rpi-rgb-led-matrix compilation.
