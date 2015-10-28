@@ -1,5 +1,5 @@
 {
-  "name": "rpi-rgb-led-matrix",
+  "name": "node-rpi-rgb-led-matrix",
   "version": "0.0.1",
   "description": "control led matrix with nodejs on raspberry pi. Nodejs binding of https://github.com/hzeller/rpi-rgb-led-matrix",
   "keywords": [
