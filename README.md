@@ -3,9 +3,14 @@ Pilot your rgb led matrix with Nodejs on Raspberry Pi ! Nodejs binding of rpi-rg
 
 ## Installation
 
+### With npm
+
+```
+$ npm i node-rpi-rgb-led-matrix
+```
+
 ### With git
 
-In command line, run this command:
 ```
 $ git clone --recursive https://github.com/zeitungen/node-rpi-rgb-led-matrix.git
 $ cd node-rpi-rgb-led-matrix
@@ -14,7 +19,6 @@ $ npm i
 
 ## Get some Fun
 
-I guess you have installed this into the `node_modules` directory of your project:
 ```js
 var LedMatrix = require("node-rpi-rgb-led-matrix");
 
