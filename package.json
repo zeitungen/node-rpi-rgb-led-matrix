@@ -18,5 +18,8 @@
   	"url": "https://github.com/zeitungen/node-rpi-rgb-led-matrix/"
   },
   "main": "index.js",
-  "license": "WTFPL"
+  "license": "WTFPL",
+  "engines" : {
+    "node" : ">=0.10.3 <0.12"
+  }
 }
