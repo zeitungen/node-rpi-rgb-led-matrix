@@ -7,7 +7,7 @@
 
 #include <ledmatrix.h>
 
-void init(Handle<v8::Object> target) {
+void init(Local<v8::Object> target) {
   LedMatrix::Initialize(target);
 }
 

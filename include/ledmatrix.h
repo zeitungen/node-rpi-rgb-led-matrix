@@ -6,34 +6,40 @@
 #define NODE_LED_MATRIX_H
 
 #include <node.h>
+#include <node_object_wrap.h>
 
 #include <led-matrix.h> 
 
-using namespace v8;
-using namespace node;
 using namespace rgb_matrix;
 using rgb_matrix::GPIO;
+
+using v8::FunctionCallbackInfo;
+using v8::Isolate;
+using v8::Local;
+using v8::Object;
+using v8::String;
+using v8::Value;
 
 /**
  * Class: LedMatrix
  *	Wrapper for rpi-rgb-led-matrix.
  */
-class LedMatrix : public ObjectWrap {
+class LedMatrix : public node::ObjectWrap {
 	public:
 		/**
-		 * Variable: constructor_template
+		 * Variable: constructor
 		 *	Used to create nodejs constructor.
 		 */
-		static v8::Persistent<v8::FunctionTemplate> constructor_template;
+		static v8::Persistent<v8::Function> constructor;
 
 		/**
-	     * Function: Initialize
-	     *   Used to intialize the EventEmitter from Node.js
-	     *
-	     * Parameters:
-	     *   target - v8::Object the Node.js global module object
-	     */
-		static void Initialize(v8::Handle<v8::Object> target);
+	 	 * Function: Initialize
+	 	 *   Used to intialize the EventEmitter from Node.js
+		 *
+		 * Parameters:
+		 *   target - v8::Object the Node.js global module object
+		 */
+		static void Initialize(v8::Local<v8::Object> target);
 
 		int GetWidth();
 		int GetHeight();
@@ -46,13 +52,13 @@ class LedMatrix : public ObjectWrap {
 
 		virtual ~LedMatrix();
 
-		static v8::Handle<v8::Value> New(const v8::Arguments& args);
+		static void New(const FunctionCallbackInfo<Value>& args);
 
-		static v8::Handle<v8::Value> GetWidth(const v8::Arguments& args);
-		static v8::Handle<v8::Value> GetHeight(const v8::Arguments& args);
-		static v8::Handle<v8::Value> SetPixel(const v8::Arguments& args);
-		static v8::Handle<v8::Value> Clear(const v8::Arguments& args);
-		static v8::Handle<v8::Value> Fill(const v8::Arguments& args);
+		static void GetWidth(const FunctionCallbackInfo<v8::Value>& args);
+		static void GetHeight(const FunctionCallbackInfo<v8::Value>& args);
+		static void SetPixel(const FunctionCallbackInfo<v8::Value>& args);
+		static void Clear(const FunctionCallbackInfo<v8::Value>& args);
+		static void Fill(const FunctionCallbackInfo<v8::Value>& args);
 
 	private:
 		v8::Handle<v8::Object> self;
