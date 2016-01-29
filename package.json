@@ -3,23 +3,33 @@
   "version": "0.0.2",
   "description": "control led matrix with nodejs on raspberry pi. Nodejs binding of https://github.com/hzeller/rpi-rgb-led-matrix",
   "keywords": [
-  	"raspberry", "raspberrypi", "pi", "rpi", "ledmatrix",
-  	"rpi-rgb-led-matrix", "led-matrix"
+    "raspberry",
+    "raspberrypi",
+    "pi",
+    "rpi",
+    "ledmatrix",
+    "rpi-rgb-led-matrix",
+    "led-matrix"
   ],
   "homepage": "https://github.com/zeitungen/node-rpi-rgb-led-matrix/",
-  "bugs": {"url": "https://github.com/zeitungen/node-rpi-rgb-led-matrix/issues"},
+  "bugs": {
+    "url": "https://github.com/zeitungen/node-rpi-rgb-led-matrix/issues"
+  },
   "author": {
-  	"name": "Maxime Journaux",
-  	"email": "journaux.maxime@gmail.com",
-  	"url": "https://github.com/zeitungen/"
+    "name": "Maxime Journaux",
+    "email": "journaux.maxime@gmail.com",
+    "url": "https://github.com/zeitungen/"
   },
   "repository": {
-  	"type": "git",
-  	"url": "https://github.com/zeitungen/node-rpi-rgb-led-matrix/"
+    "type": "git",
+    "url": "https://github.com/zeitungen/node-rpi-rgb-led-matrix/"
   },
   "main": "index.js",
   "license": "WTFPL",
-  "engines" : {
-    "node" : ">=0.10.3 <0.12"
+  "engines": {
+    "node": ">=0.10.3"
+  },
+  "dependencies": {
+    "nan": "^2.2.0"
   }
 }

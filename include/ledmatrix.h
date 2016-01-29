@@ -7,18 +7,13 @@
 
 #include <node.h>
 #include <node_object_wrap.h>
+#include <nan.h>
 
 #include <led-matrix.h> 
 
 using namespace rgb_matrix;
 using rgb_matrix::GPIO;
 
-using v8::FunctionCallbackInfo;
-using v8::Isolate;
-using v8::Local;
-using v8::Object;
-using v8::String;
-using v8::Value;
 
 /**
  * Class: LedMatrix
@@ -30,7 +25,7 @@ class LedMatrix : public node::ObjectWrap {
 		 * Variable: constructor
 		 *	Used to create nodejs constructor.
 		 */
-		static v8::Persistent<v8::Function> constructor;
+		static Nan::Persistent<v8::Function> constructor;
 
 		/**
 	 	 * Function: Initialize
@@ -39,7 +34,7 @@ class LedMatrix : public node::ObjectWrap {
 		 * Parameters:
 		 *   target - v8::Object the Node.js global module object
 		 */
-		static void Initialize(v8::Local<v8::Object> target);
+		static void Init(v8::Local<v8::Object> exports);
 
 		int GetWidth();
 		int GetHeight();
@@ -52,16 +47,15 @@ class LedMatrix : public node::ObjectWrap {
 
 		virtual ~LedMatrix();
 
-		static void New(const FunctionCallbackInfo<Value>& args);
+		static void New(const Nan::FunctionCallbackInfo<v8::Value>& args);
 
-		static void GetWidth(const FunctionCallbackInfo<v8::Value>& args);
-		static void GetHeight(const FunctionCallbackInfo<v8::Value>& args);
-		static void SetPixel(const FunctionCallbackInfo<v8::Value>& args);
-		static void Clear(const FunctionCallbackInfo<v8::Value>& args);
-		static void Fill(const FunctionCallbackInfo<v8::Value>& args);
+		static void GetWidth(const Nan::FunctionCallbackInfo<v8::Value>& args);
+		static void GetHeight(const Nan::FunctionCallbackInfo<v8::Value>& args);
+		static void SetPixel(const Nan::FunctionCallbackInfo<v8::Value>& args);
+		static void Clear(const Nan::FunctionCallbackInfo<v8::Value>& args);
+		static void Fill(const Nan::FunctionCallbackInfo<v8::Value>& args);
 
 	private:
-		v8::Handle<v8::Object> self;
 
 		GPIO io;
 		RGBMatrix* matrix;

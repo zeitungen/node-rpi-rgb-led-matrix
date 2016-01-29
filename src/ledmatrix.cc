@@ -15,7 +15,7 @@ using namespace node;
 using namespace rgb_matrix;
 using rgb_matrix::GPIO;
 
-Persistent<Function> LedMatrix::constructor;
+Nan::Persistent<v8::Function> LedMatrix::constructor;
 
 LedMatrix::LedMatrix(int rows, int chained_displays, int parallel_displays) {
 	assert(io.Init());
@@ -27,25 +27,24 @@ LedMatrix::~LedMatrix() {
 	delete matrix;
 }
 
-void LedMatrix::Initialize(Handle<v8::Object> target) {
+void LedMatrix::Init(Handle<v8::Object> exports) {
 
-	Isolate* isolate = target->GetIsolate(); 
-	HandleScope handle(isolate);
+	Nan::HandleScope scope;
 	
-	Local<FunctionTemplate> tpl = FunctionTemplate::New(isolate, LedMatrix::New);
-
-	tpl->SetClassName(String::NewFromUtf8(isolate, "LedMatrix"));
+	v8::Local<v8::FunctionTemplate> tpl = Nan::New<v8::FunctionTemplate>(New);
+	
+	tpl->SetClassName(Nan::New("LedMatrix").ToLocalChecked());
 	tpl->InstanceTemplate()->SetInternalFieldCount(1);
 
-	NODE_SET_PROTOTYPE_METHOD(tpl, "getWidth", GetWidth);
-	NODE_SET_PROTOTYPE_METHOD(tpl, "getHeight", GetHeight);
-	NODE_SET_PROTOTYPE_METHOD(tpl, "setPixel", SetPixel);
-	NODE_SET_PROTOTYPE_METHOD(tpl, "clear", Clear);
-	NODE_SET_PROTOTYPE_METHOD(tpl, "fill", Fill);
+	Nan::SetPrototypeMethod(tpl, "getWidth", GetWidth);
+	Nan::SetPrototypeMethod(tpl, "getHeight", GetHeight);
+	Nan::SetPrototypeMethod(tpl, "setPixel", SetPixel);
+	Nan::SetPrototypeMethod(tpl, "clear", Clear);
+	Nan::SetPrototypeMethod(tpl, "fill", Fill);
 	
-	constructor.Reset(isolate, tpl->GetFunction());
+	constructor.Reset(tpl->GetFunction());
 
-	target->Set(String::NewFromUtf8(isolate, "LedMatrix"), tpl->GetFunction());
+	exports->Set(Nan::New("LedMatrix").ToLocalChecked(), tpl->GetFunction());
 }
 
 int LedMatrix::GetWidth() {
@@ -68,14 +67,11 @@ void LedMatrix::Fill(uint8_t r, uint8_t g, uint8_t b) {
 	matrix->Fill(r, g, b);
 }
 
-void LedMatrix::New(const FunctionCallbackInfo<Value>& args) {
-	Isolate* isolate = args.GetIsolate(); 
-	HandleScope scope(isolate);
+void LedMatrix::New(const Nan::FunctionCallbackInfo<Value>& args) {
 
 	// throw an error if it's not a constructor 
 	if (!args.IsConstructCall()) {
-		isolate->ThrowException(Exception::TypeError(
-			String::NewFromUtf8(isolate, "LedMatrix::must be called as a constructor with 'new' keyword")));
+		Nan::ThrowError("LedMatrix::must be called as a constructor with 'new' keyword");
 	}
 
 	// grab parameters
@@ -101,34 +97,27 @@ void LedMatrix::New(const FunctionCallbackInfo<Value>& args) {
 	args.GetReturnValue().Set(args.This());
 }
 
-void LedMatrix::GetWidth(const v8::FunctionCallbackInfo<v8::Value>& args) {
-	Isolate* isolate = args.GetIsolate(); 
-	HandleScope scope(isolate);
+void LedMatrix::GetWidth(const Nan::FunctionCallbackInfo<v8::Value>& args) {
 
-	LedMatrix* matrix = ObjectWrap::Unwrap<LedMatrix>(args.This());
+	LedMatrix* matrix = ObjectWrap::Unwrap<LedMatrix>(args.Holder());
 	
-	args.GetReturnValue().Set(Number::New(isolate, matrix->GetWidth()));
+	args.GetReturnValue().Set(Nan::New<v8::Number>(matrix->GetWidth()));
 }
 
-void LedMatrix::GetHeight(const FunctionCallbackInfo<v8::Value>& args) {
-	Isolate* isolate = args.GetIsolate(); 
-	HandleScope scope(isolate);
+void LedMatrix::GetHeight(const Nan::FunctionCallbackInfo<v8::Value>& args) {
 
-	LedMatrix* matrix = ObjectWrap::Unwrap<LedMatrix>(args.This());
+	LedMatrix* matrix = ObjectWrap::Unwrap<LedMatrix>(args.Holder());
 
-	args.GetReturnValue().Set(Number::New(isolate, matrix->GetHeight()));
+	args.GetReturnValue().Set(Nan::New<v8::Number>(matrix->GetHeight()));
 }
 
-void LedMatrix::SetPixel(const FunctionCallbackInfo<v8::Value>& args) {
-	Isolate* isolate = args.GetIsolate(); 
-	HandleScope scope(isolate);
+void LedMatrix::SetPixel(const Nan::FunctionCallbackInfo<v8::Value>& args) {
 
-	LedMatrix* matrix = ObjectWrap::Unwrap<LedMatrix>(args.This());
+	LedMatrix* matrix = ObjectWrap::Unwrap<LedMatrix>(args.Holder());
 
 	if(!args.Length() == 5 || !args[0]->IsNumber() || !args[1]->IsNumber() || !args[2]->IsNumber()
 	|| !args[3]->IsNumber() || !args[4]->IsNumber()) {
-		isolate->ThrowException(Exception::TypeError(
-				String::NewFromUtf8(isolate, "Parameters error")));
+		Nan::ThrowTypeError("Wrong parameters! Expects 5 numbers");
   	}
 
   	int x = args[0]->ToInteger()->Value();
@@ -141,24 +130,19 @@ void LedMatrix::SetPixel(const FunctionCallbackInfo<v8::Value>& args) {
 
 }
 
-void LedMatrix::Clear(const FunctionCallbackInfo<v8::Value>& args) {
-	Isolate* isolate = args.GetIsolate(); 
-	HandleScope scope(isolate);
+void LedMatrix::Clear(const Nan::FunctionCallbackInfo<v8::Value>& args) {
 
-	LedMatrix* matrix = ObjectWrap::Unwrap<LedMatrix>(args.This());
+	LedMatrix* matrix = ObjectWrap::Unwrap<LedMatrix>(args.Holder());
 
 	matrix->Clear();
 }
 
-void LedMatrix::Fill(const FunctionCallbackInfo<v8::Value>& args) {
-	Isolate* isolate = args.GetIsolate(); 
-	HandleScope scope(isolate);
+void LedMatrix::Fill(const Nan::FunctionCallbackInfo<v8::Value>& args) {
 
-	LedMatrix* matrix = ObjectWrap::Unwrap<LedMatrix>(args.This());
+	LedMatrix* matrix = ObjectWrap::Unwrap<LedMatrix>(args.Holder());
 
 	if(!args.Length() == 3 || !args[0]->IsNumber() || !args[1]->IsNumber() || !args[2]->IsNumber()) {
-		isolate->ThrowException(Exception::TypeError(
-				String::NewFromUtf8(isolate, "Parameters error")));
+		Nan::ThrowTypeError("Wrong parameters! Expects 3 numbers");
 	}
 
 	int r = args[0]->ToInteger()->Value();
