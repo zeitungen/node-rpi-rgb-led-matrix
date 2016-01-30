@@ -27,7 +27,7 @@ LedMatrix::~LedMatrix() {
 	delete matrix;
 }
 
-void LedMatrix::Init(Handle<v8::Object> exports) {
+void LedMatrix::Init(v8::Local<v8::Object> exports) {
 
 	Nan::HandleScope scope;
 	
