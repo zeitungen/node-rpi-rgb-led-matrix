@@ -2,7 +2,7 @@
 	"targets": [
 		{
 	        "target_name": "node-rpi-rgb-led-matrix",
-	        "sources": [ "src/base.cc", "src/ledmatrix.cc" ],
+	        "sources": [ "src/base.cc", "src/ledmatrix.cc", "src/image.cc" ],
 	        "dependencies": [ "./binding.gyp:rpi-rgb-led-matrix" ],
 	        "include_dirs": [ "./external/matrix/include", "./include/", "<!(node -e \"require('nan')\")" ]
 	    },
