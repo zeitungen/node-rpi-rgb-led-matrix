@@ -18,6 +18,10 @@
 using namespace rgb_matrix;
 using rgb_matrix::GPIO;
 
+#define SCROLL_TO_LEFT 		0x01
+#define SCROLL_TO_RIGHT 	0x02
+#define SCROLL_TO_BOTTOM 	0x03
+#define SCROLL_TO_TOP 		0x04
 
 /**
  * Class: LedMatrix
@@ -32,6 +36,7 @@ class LedMatrix : public node::ObjectWrap {
 		int GetHeight();
 		void SetPixel(int x, int y, uint8_t r, uint8_t g, uint8_t b);
 		void Clear();
+		void Clear(int x, int y, int w, int h);
 		void Fill(uint8_t r, uint8_t g, uint8_t b);
 		void SetImage(Image* img);
 		void Draw(int screenx, int screeny, int width, int height, int imgx, int imgy,
@@ -52,12 +57,25 @@ class LedMatrix : public node::ObjectWrap {
 		static void SetImageBuffer(const Nan::FunctionCallbackInfo<v8::Value>& args);
 		static void Draw(const Nan::FunctionCallbackInfo<v8::Value>& args);
 
+		static void Scroll(const Nan::FunctionCallbackInfo<v8::Value>& args);
+		static void UV_Scroll(uv_work_t* work);
+		static void UV_AfterScroll(uv_work_t* work, int status);
+
 	private:
 
 		GPIO io;
 		RGBMatrix* matrix;
 
 		Image* image;
+
+		struct uvscroll {
+			LedMatrix* matrix;
+			Nan::Callback* callback;
+			int startx;	int starty;
+			int width;	int height;
+			int scroll;	int loop;
+			int speed;
+		};
 };
 
 #endif

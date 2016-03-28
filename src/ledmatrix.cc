@@ -49,6 +49,7 @@ void LedMatrix::Init(v8::Local<v8::Object> exports) {
 	Nan::SetPrototypeMethod(tpl, "fill", Fill);
 	Nan::SetPrototypeMethod(tpl, "setImageBuffer", SetImageBuffer);
 	Nan::SetPrototypeMethod(tpl, "draw", Draw);
+	Nan::SetPrototypeMethod(tpl, "scroll", Scroll);
 	
 	constructor.Reset(tpl->GetFunction());
 
@@ -71,6 +72,14 @@ void LedMatrix::Clear() {
 	matrix->Clear();
 }
 
+void LedMatrix::Clear(int x, int y, int w, int h) {
+	for(int j=y; j<y+h; j++) {
+		for(int i=x; i<x+w; i++) {
+			matrix->SetPixel(i, j, 0, 0, 0);
+		}
+	}
+}
+
 void LedMatrix::Fill(uint8_t r, uint8_t g, uint8_t b) {
 	matrix->Fill(r, g, b);
 }
@@ -90,12 +99,10 @@ void LedMatrix::SetImage(Image* img) {
 }
 
 void LedMatrix::Draw(int screenx, int screeny, int width, int height, int imgx, int imgy, bool looph, bool loopv) {
-	// determinate surface width to draw
 	int w = width;
 	if(image->GetWidth() - imgx < w && !looph)
 		w = image->GetWidth() - imgx;
 
-	// determinate surface height to draw
 	int h = height;
 	if(image->GetHeight() - imgy < h && !loopv)
 		h = image->GetHeight() - imgy;
@@ -170,7 +177,16 @@ void LedMatrix::SetPixel(const Nan::FunctionCallbackInfo<v8::Value>& args) {
 
 void LedMatrix::Clear(const Nan::FunctionCallbackInfo<v8::Value>& args) {
 	LedMatrix* matrix = ObjectWrap::Unwrap<LedMatrix>(args.Holder());
-	matrix->Clear();
+
+	if(args.Length() == 4 && args[0]->IsNumber() && args[1]->IsNumber() && args[2]->IsNumber() && args[3]->IsNumber()) {
+		int x = args[0]->ToInteger()->Value();
+	  	int y = args[1]->ToInteger()->Value();
+	  	int w = args[2]->ToInteger()->Value();
+	  	int h = args[3]->ToInteger()->Value();
+	  	matrix->Clear(x, y, w, h);
+	} else {
+		matrix->Clear();
+	}
 }
 
 void LedMatrix::Fill(const Nan::FunctionCallbackInfo<v8::Value>& args) {
@@ -188,7 +204,7 @@ void LedMatrix::Fill(const Nan::FunctionCallbackInfo<v8::Value>& args) {
 
 void LedMatrix::SetImageBuffer(const Nan::FunctionCallbackInfo<v8::Value>& args) {
 	if(args.Length() < 3 || !args[1]->IsNumber() || !args[2]->IsNumber()) {
-		return Nan::ThrowTypeError("Parameters error: addImage(buffer, width, height)");
+		return Nan::ThrowTypeError("Parameters error: SetImageBuffer(buffer, width, height)");
 	}
 
 	LedMatrix* matrix = ObjectWrap::Unwrap<LedMatrix>(args.Holder());
@@ -243,4 +259,136 @@ void LedMatrix::Draw(const Nan::FunctionCallbackInfo<v8::Value>& args) {
 
 
     matrix->Draw(startx, starty, width, height, imgx, imgy, looph, loopv);
+}
+
+void LedMatrix::Scroll(const Nan::FunctionCallbackInfo<v8::Value>& args) {
+	LedMatrix* matrix = ObjectWrap::Unwrap<LedMatrix>(args.This());
+
+	if(args.Length() == 0 || !args[0]->IsFunction()) {
+    	return Nan::ThrowTypeError("Callback is required and must be a Function");
+  	}
+
+	int startx = 0;
+	int starty = 0;
+	if(args.Length() > 1 && args[1]->IsNumber()) startx = args[1]->ToInteger()->Value();
+	if(args.Length() > 2 && args[2]->IsNumber()) starty = args[2]->ToInteger()->Value();
+
+	int width = matrix->GetWidth() - startx;
+	int height = matrix->GetHeight() - starty;
+	int scroll = SCROLL_TO_LEFT;
+	int speed = 1;
+	int loop = 0;
+
+	if(args.Length() > 3 && args[3]->IsNumber()) width = 	args[3]->ToInteger()->Value();
+	if(args.Length() > 4 && args[4]->IsNumber()) height = 	args[4]->ToInteger()->Value();
+	if(args.Length() > 5 && args[5]->IsNumber()) scroll = 	args[5]->ToInteger()->Value();
+	if(args.Length() > 6 && args[6]->IsNumber()) speed = 	args[6]->ToInteger()->Value();
+	if(args.Length() > 7 && args[7]->IsNumber()) loop = 	args[7]->ToInteger()->Value();
+
+	// convert to ms
+	speed = speed * 1000;
+
+	uvscroll* uv = new uvscroll();
+	uv->matrix = matrix;	uv->callback = new Nan::Callback(Local<Function>::Cast(args[0]));
+	uv->startx = startx;	uv->starty = starty;
+	uv->width = width;		uv->height = height;
+	uv->scroll = scroll;	uv->loop = loop;
+	uv->speed = speed;
+
+	matrix->Ref();
+
+	uv_work_t* w = new uv_work_t;
+	w->data = uv;
+	int r = uv_queue_work(uv_default_loop(), w, UV_Scroll, UV_AfterScroll);
+	if(r != 0) {
+		delete uv;
+		delete w;
+
+		matrix->Unref();
+
+		return Nan::ThrowTypeError("Internal error: Failed to queue scroll work");
+	}
+}
+
+void LedMatrix::UV_Scroll(uv_work_t* work) {
+	uvscroll* uv = static_cast<uvscroll*>(work->data);
+
+	assert(uv->matrix != NULL);
+
+	if(uv->scroll == SCROLL_TO_LEFT) {
+		if(uv->loop > 0) {
+			for(int l = 0; l < uv->loop; l++) {
+				for(int i = 0; i < uv->matrix->image->GetWidth(); i++) {
+					uv->matrix->Clear(uv->startx, uv->starty, uv->width, uv->height);
+					uv->matrix->Draw(uv->startx, uv->starty, uv->width, uv->height, i, 0, true, false);
+					usleep(uv->speed);
+				}
+				uv->matrix->Clear(uv->startx, uv->starty, uv->width, uv->height);
+				uv->matrix->Draw(uv->startx, uv->starty, uv->width, uv->height, 0, 0, true, false);
+			}
+		} else {
+			for(int i = 0; i < uv->matrix->image->GetWidth(); i++) {
+				uv->matrix->Clear(uv->startx, uv->starty, uv->width, uv->height);
+				uv->matrix->Draw(uv->startx, uv->starty, uv->width, uv->height, i, 0, false, false);
+				usleep(uv->speed);
+			}
+		}
+	} else if(uv->scroll == SCROLL_TO_RIGHT) {
+		if(uv->loop < 1) {
+			for(int i = uv->startx; i < uv->width; i++) {
+				uv->matrix->Clear(uv->startx, uv->starty, uv->width, uv->height);
+				uv->matrix->Draw(i, uv->starty, uv->width-i, uv->height, 0, 0, false, false);
+				usleep(uv->speed);
+			}
+		} else {
+			for(int l = 0; l < uv->loop; l++) {
+				for(int i = uv->matrix->image->GetWidth()-1; i >= 0 ; i--) {
+					uv->matrix->Clear(uv->startx, uv->starty, uv->width, uv->height);
+					uv->matrix->Draw(uv->startx, uv->starty, uv->width, uv->height, i, 0, true, false);
+					usleep(uv->speed);
+				}
+			}
+		}
+	} else if(uv->scroll == SCROLL_TO_TOP) {
+		if(uv->loop > 0) {
+			for(int l = 0; l < uv->loop; l++) {
+				for(int i = 0; i < uv->matrix->image->GetHeight(); i++) {
+					uv->matrix->Clear(uv->startx, uv->starty, uv->width, uv->height);
+					uv->matrix->Draw(uv->startx, uv->starty, uv->width, uv->height, 0, i, false, true);
+					usleep(uv->speed);
+				}
+				uv->matrix->Clear(uv->startx, uv->starty, uv->width, uv->height);
+				uv->matrix->Draw(uv->startx, uv->starty, uv->width, uv->height, 0, 0, false, true);	
+			}
+		} else {
+			for(int i = 0; i < uv->matrix->image->GetHeight(); i++) {
+				uv->matrix->Draw(uv->startx, uv->starty, uv->width, uv->height, 0, i, false, false);
+				usleep(uv->speed);
+			}
+		}
+	} else if(uv->scroll == SCROLL_TO_BOTTOM) {
+		if(uv->loop < 1) {
+			for(int i = uv->starty; i < uv->height; i++) {
+				uv->matrix->Clear(uv->startx, uv->starty, uv->width, uv->height);
+				uv->matrix->Draw(uv->startx, i, uv->width, uv->height-1, 0, 0, false, false);
+				usleep(uv->speed);
+			}
+		} else {
+			for(int l = 0; l < uv->loop; l++) {
+				for(int i = uv->matrix->image->GetHeight()-1; i >= 0 ; i--) {
+					uv->matrix->Clear(uv->startx, uv->starty, uv->width, uv->height);
+					uv->matrix->Draw(uv->startx, uv->starty, uv->width, uv->height, 0, i, false, true);
+					usleep(uv->speed);
+				}
+			}
+		}
+	}
+}
+
+void LedMatrix::UV_AfterScroll(uv_work_t* work, int status) {
+	uvscroll* uv = static_cast<uvscroll*>(work->data);
+	uv->matrix->Unref();
+	uv->callback->Call(0, 0);
+	delete uv;
+	delete work;
 }
