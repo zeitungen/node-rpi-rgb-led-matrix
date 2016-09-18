@@ -10,6 +10,7 @@
 #include <node.h>
 
 #include <stdlib.h>
+#include <unistd.h>
 
 #include <led-matrix.h>
 #include <ledmatrix.h>
@@ -161,7 +162,7 @@ void LedMatrix::GetHeight(const Nan::FunctionCallbackInfo<v8::Value>& args) {
 void LedMatrix::SetPixel(const Nan::FunctionCallbackInfo<v8::Value>& args) {
 	LedMatrix* matrix = ObjectWrap::Unwrap<LedMatrix>(args.Holder());
 
-	if(!args.Length() == 5 || !args[0]->IsNumber() || !args[1]->IsNumber() || !args[2]->IsNumber()
+	if(args.Length() != 5 || !args[0]->IsNumber() || !args[1]->IsNumber() || !args[2]->IsNumber()
 	|| !args[3]->IsNumber() || !args[4]->IsNumber()) {
 		Nan::ThrowTypeError("Wrong parameters! Expects 5 numbers");
   	}
@@ -192,7 +193,7 @@ void LedMatrix::Clear(const Nan::FunctionCallbackInfo<v8::Value>& args) {
 void LedMatrix::Fill(const Nan::FunctionCallbackInfo<v8::Value>& args) {
 	LedMatrix* matrix = ObjectWrap::Unwrap<LedMatrix>(args.Holder());
 
-	if(!args.Length() == 3 || !args[0]->IsNumber() || !args[1]->IsNumber() || !args[2]->IsNumber()) {
+	if(args.Length() != 3 || !args[0]->IsNumber() || !args[1]->IsNumber() || !args[2]->IsNumber()) {
 		Nan::ThrowTypeError("Wrong parameters! Expects 3 numbers");
 	}
 
@@ -214,7 +215,7 @@ void LedMatrix::SetImageBuffer(const Nan::FunctionCallbackInfo<v8::Value>& args)
 	int width = args[1]->ToInteger()->Value();
 	int height = args[2]->ToInteger()->Value();
 
-	assert(bufl == width*height*3);
+	assert((int)bufl == width*height*3);
 
 	Image* img = new Image();
 	Pixel* pixels = (Pixel*) malloc(sizeof(Pixel)*width*height);

@@ -14,9 +14,9 @@
 
 Pixel::Pixel() : red(0), green(0), blue(0) {}
 
-const uint8_t Pixel::R() { return red; }
-const uint8_t Pixel::G() { return green; }
-const uint8_t Pixel::B() { return blue; }
+uint8_t Pixel::R() const { return red; }
+uint8_t Pixel::G() const { return green; }
+uint8_t Pixel::B() const { return blue; }
 
 void Pixel::SetR(uint8_t r) { red = r; }
 void Pixel::SetG(uint8_t g) { green = g; }

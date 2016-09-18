@@ -16,9 +16,9 @@ class Pixel {
 		// Pixel() : red(0), green(0), blue(0) {}
 		Pixel();
 
-		const uint8_t R();
-		const uint8_t G();
-		const uint8_t B();
+		uint8_t R() const;
+		uint8_t G() const;
+		uint8_t B() const;
 
 		void SetR(uint8_t r);
 		void SetG(uint8_t g);
