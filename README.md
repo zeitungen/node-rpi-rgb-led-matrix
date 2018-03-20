@@ -2,7 +2,9 @@
 Pilot your rgb led matrix with Nodejs on Raspberry Pi ! Nodejs binding of rpi-rgb-led-matrix library https://github.com/hzeller/rpi-rgb-led-matrix
 
 **PROJECT NOT MAINTAINED ! :(**
+
 **It probably will not work with recent nodejs version.**
+
 **It is not binding recent version of rpi-rgb-led-matrix library.**
 
 ## Compatibility
