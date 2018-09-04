@@ -15,6 +15,8 @@
 #include <led-matrix.h>
 #include <ledmatrix.h>
 
+#include <string> 
+
 using namespace v8;
 using namespace node;
 using namespace rgb_matrix;
@@ -22,9 +24,17 @@ using rgb_matrix::GPIO;
 
 Nan::Persistent<v8::Function> LedMatrix::constructor;
 
-LedMatrix::LedMatrix(int rows, int chained_displays, int parallel_displays) {
+LedMatrix::LedMatrix(int rows, int cols , int parallel_displays, int chained_displays, const char* mapping) {
+
+	RGBMatrix::Options defaults; 
+	defaults.rows = rows;
+	defaults.cols = cols; 
+	defaults.chain_length = chained_displays;
+	defaults.parallel = parallel_displays; 
+	defaults.hardware_mapping = mapping;
+
 	assert(io.Init());
-	matrix = new RGBMatrix(&io, rows, chained_displays, parallel_displays);	
+	matrix = new RGBMatrix(&io, defaults);	
 	matrix->set_luminance_correct(true);
 	image = NULL;
 }
@@ -128,21 +138,34 @@ void LedMatrix::New(const Nan::FunctionCallbackInfo<Value>& args) {
 
 	// grab parameters
 	int rows = 32;
+	int cols = 32;
 	int chained = 1;
 	int parallel = 1;
+	std::string mapping = "adafruit-hat-pwm";
 
 	if(args.Length() > 0 && args[0]->IsNumber()) {
 		rows = args[0]->ToInteger()->Value();
 	}
 	if(args.Length() > 1 && args[1]->IsNumber()) {
-		chained = args[1]->ToInteger()->Value();
+		cols = args[1]->ToInteger()->Value();
 	}
+
 	if(args.Length() > 2 && args[2]->IsNumber()) {
-		parallel = args[2]->ToInteger()->Value();
+		chained = args[2]->ToInteger()->Value();
+	}
+	if(args.Length() > 3 && args[3]->IsNumber()) {
+		parallel = args[3]->ToInteger()->Value();
+	}
+
+	if(args.Length() > 4 && args[4]->IsString()) {
+
+		v8::String::Utf8Value str(args[4]->ToString());
+		mapping = std::string(*str);
 	}
 
 	// make the matrix
-	LedMatrix* matrix = new LedMatrix(rows, chained, parallel);
+
+	LedMatrix* matrix = new LedMatrix(rows, cols, chained, parallel, mapping.c_str());
 	matrix->Wrap(args.This());
 
 	// return this object

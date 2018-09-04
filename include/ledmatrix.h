@@ -43,7 +43,7 @@ class LedMatrix : public node::ObjectWrap {
 					bool looph, bool loopv);
 
 	protected:
-		LedMatrix(int rows = 16, int chained_displays = 1, int parallel_displays = 1);
+		LedMatrix(int rows , int cols , int chained_displays , int parallel_displays, const char* mapping);
 
 		virtual ~LedMatrix();
 
