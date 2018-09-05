@@ -38,7 +38,7 @@ matrix.setPixel(0, 0, 0, 50, 255);
 ## LedMatrix API
 
 * **Constructor: LedMatrix(rows, cols,  chainedDisplays, parallelDisplays, hardware-mapping)**
-  default values are `rows=32`, ,`cols=32`,  `chainedDisplays=1`, `parallelDisplay=1`, `hardware-mapping=regular`
+  default values are `rows=32`, `cols=32`,  `chainedDisplays=1`, `parallelDisplay=1`, `hardware-mapping=regular`
 * **getWidth()** return current led matrix width
 * **getHeight()** return current led matrix height
 * **fill(red, green, blue)** fill the led matrix with color specified
