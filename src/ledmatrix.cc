@@ -141,7 +141,7 @@ void LedMatrix::New(const Nan::FunctionCallbackInfo<Value>& args) {
 	int cols = 32;
 	int chained = 1;
 	int parallel = 1;
-	std::string mapping = "adafruit-hat-pwm";
+	std::string mapping = "regular";
 
 	if(args.Length() > 0 && args[0]->IsNumber()) {
 		rows = args[0]->ToInteger()->Value();

@@ -5,7 +5,7 @@ Pilot your rgb led matrix with Nodejs on Raspberry Pi ! Nodejs binding of rpi-rg
 
 **It probably will not work with recent nodejs version.**
 
-**It is not binding recent version of rpi-rgb-led-matrix library.**
+**It is binding recent version of rpi-rgb-led-matrix library.**
 
 ## Compatibility
 NOTE: node-rpi-rgb-led-matrix should work across Node.js versions 0.8, 0.10, 0.12, 4 and 5 as it uses [Native Abstractions](https://github.com/nodejs/nan). *HOWEVER* there is a problem with the Node.js version 0.10.29 packaged with Raspbian Jessie 2015-11-21 which breaks Native Abstractions. The easiest fix is to make a minor edit to your v8.js file; this and other solutions outlined on [this Raspberry Pi Forum post](https://www.raspberrypi.org/forums/viewtopic.php?f=66&t=127939). 
@@ -28,15 +28,17 @@ $ npm i
 ```js
 var LedMatrix = require("node-rpi-rgb-led-matrix");
 
-var matrix = new LedMatrix(16);
+//init a 16 rows  by 16 cols led matrix 
+//default hardware mapping is 'regular', could be 'adafruit-hat-pwm' ect 
+var matrix = new LedMatrix(16, 16 );
 matrix.fill(255, 50, 100);
 matrix.setPixel(0, 0, 0, 50, 255);
 ```
 
 ## LedMatrix API
 
-* **Constructor: LedMatrix(rows, chainedDisplays, parallelDisplays)**
-  default values are `rows=32`, `chainedDisplays=1`, `parallelDisplay=1`
+* **Constructor: LedMatrix(rows, cols,  chainedDisplays, parallelDisplays, hardware-mapping)**
+  default values are `rows=32`, `cols=32`,  `chainedDisplays=1`, `parallelDisplay=1`, `hardware-mapping=regular`
 * **getWidth()** return current led matrix width
 * **getHeight()** return current led matrix height
 * **fill(red, green, blue)** fill the led matrix with color specified
