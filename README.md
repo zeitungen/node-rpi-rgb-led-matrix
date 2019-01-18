@@ -3,9 +3,11 @@ Pilot your rgb led matrix with Nodejs on Raspberry Pi ! Nodejs binding of rpi-rg
 
 **PROJECT NOT MAINTAINED ! :(**
 
-**It probably will not work with recent nodejs version.**
+**If you want to see a better and up to date project go to https://github.com/easybotics/node-rpi-rgb-led-matrix**
 
-**It is binding recent version of rpi-rgb-led-matrix library.**
+**This repository probably will not work with recent nodejs version.**
+
+**This repository is probably not binding recent version of rpi-rgb-led-matrix library.**
 
 ## Compatibility
 NOTE: node-rpi-rgb-led-matrix should work across Node.js versions 0.8, 0.10, 0.12, 4 and 5 as it uses [Native Abstractions](https://github.com/nodejs/nan). *HOWEVER* there is a problem with the Node.js version 0.10.29 packaged with Raspbian Jessie 2015-11-21 which breaks Native Abstractions. The easiest fix is to make a minor edit to your v8.js file; this and other solutions outlined on [this Raspberry Pi Forum post](https://www.raspberrypi.org/forums/viewtopic.php?f=66&t=127939). 
